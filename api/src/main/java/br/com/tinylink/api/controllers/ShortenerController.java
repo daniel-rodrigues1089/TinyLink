@@ -1,7 +1,8 @@
 package br.com.tinylink.api.controllers;
 
-import java.util.List;
+import java.util.Optional;
 
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ import br.com.tinylink.api.utils.ShortenerUtil;
 @RestController
 @RequestMapping("/tinylink")
 public class ShortenerController {
-    
+
     @Autowired
     LinkService linkService;
 
@@ -29,14 +30,14 @@ public class ShortenerController {
     ShortenerUtil shortenerUtil;
 
     @GetMapping("/{code}")
-    public RedirectView redirect(@PathVariable Integer code){
+    public RedirectView redirect(@PathVariable Integer code) {
         RedirectView redirectView = new RedirectView();
-        Link link = linkService.findLinkByCode(code);
-        redirectView.setUrl(link.getUrl());
-        return redirectView;
+        Optional<Link> link = linkService.findLinkByCode(code);
+        redirectView.setUrl(link.get().getUrl());
 
+        return redirectView;
     }
-        
+
     @PostMapping()
     public String shortener(@RequestBody Entry entry){
         return shortenerUtil.shortener(entry.url);
